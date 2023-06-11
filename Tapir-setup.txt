@@ -1,0 +1,36 @@
+1. sudo apt install libprotobuf-dev
+2. sudo apt install libevent-openssl-2.1-7
+3. sudo apt install libevent-pthreads-2.1-7
+4. sudo apt install libevent-dev
+5. sudo apt install libssl-dev
+6. sudo apt install protobuf-compiler
+7. sudo apt-get install -y pkg-config
+7. sudo apt install g++
+8. https://zwarrior.medium.com/install-google-test-framework-gtest-on-ubuntu-20-04-368eb6951b12
+	8.1    sudo apt-get install libgtest-dev
+	8.2    sudo apt-get install cmake
+	8.3    cd /usr/src/gtest
+	8.4    sudo cmake CMakeLists.txt
+	8.5    sudo make
+	8.6    find . -name libgtest*.a (propably this file will be in ./lib/libgtest.a ,
+		./lib/libgtest_main.a
+	8.7    sudo cp ./lib/libgtest*.a /usr/lib
+	
+	
+
+TAPIR can only run manualy and not with the script. So to run the TAPIR replicas need to run the following commands
+	
+tapir1:
+./server -c "/home/ubuntu/tapir/store/tools/shard0.config" -i 0 -m "txn-l" > /home/ubuntu/tapir/shard0.replica0.log 2>&1 &
+./server -c "/home/ubuntu/tapir/store/tools/shard1.config" -i 1 -m "txn-l" > /home/ubuntu/tapir/shard1.replica1.log 2>&1 &
+./server -c "/home/ubuntu/tapir/store/tools/shard2.config" -i 1 -m "txn-l" > /home/ubuntu/tapir/shard2.replica1.log 2>&1 &
+
+tapir2:
+./server -c "/home/ubuntu/tapir/store/tools/shard0.config" -i 1 -m "txn-l" > /home/ubuntu/tapir/shard0.replica1.log 2>&1 &
+./server -c "/home/ubuntu/tapir/store/tools/shard1.config" -i 0 -m "txn-l" > /home/ubuntu/tapir/shard1.replica0.log 2>&1 &
+./server -c "/home/ubuntu/tapir/store/tools/shard2.config" -i 2 -m "txn-l" > /home/ubuntu/tapir/shard1.replica2.log 2>&1 &
+
+tapir3:
+./server -c "/home/ubuntu/tapir/store/tools/shard0.config" -i 2 -m "txn-l" > /home/ubuntu/tapir/shard0.replica2.log 2>&1 &
+./server -c "/home/ubuntu/tapir/store/tools/shard1.config" -i 2 -m "txn-l" > /home/ubuntu/tapir/shard1.replica2.log 2>&1 &
+./server -c "/home/ubuntu/tapir/store/tools/shard2.config" -i 0 -m "txn-l" > /home/ubuntu/tapir/shard2.replica0.log 2>&1 &
