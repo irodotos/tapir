@@ -48,7 +48,7 @@ IRReplica::IRReplica(transport::Configuration config, int myIdx,
             ++view;
         }
         PersistViewInfo();
-        BroadcastDoViewChangeMessages();
+        // BroadcastDoViewChangeMessages();
     } else {
         PersistViewInfo();
     }
@@ -266,6 +266,8 @@ void
 IRReplica::HandleDoViewChange(const TransportAddress &remote,
                               const proto::DoViewChangeMessage &msg)
 {
+    return;
+
     Debug(
         "Received DoViewChangeMessage from replica %d with new_view = %" PRIu64
         ", latest_normal_view = %" PRIu64 ", has_record = %d.",
@@ -362,6 +364,8 @@ void
 IRReplica::HandleStartView(const TransportAddress &remote,
                            const proto::StartViewMessage &msg)
 {
+    return;
+
     Debug("Received StartViewMessage with new_view = %" PRIu64 ".",
           msg.new_view());
 
@@ -413,6 +417,8 @@ IRReplica::HandleUnlogged(const TransportAddress &remote,
 }
 
 void IRReplica::HandleViewChangeTimeout() {
+    return;
+
     Debug("HandleViewChangeTimeout fired.");
     if (status == STATUS_NORMAL) {
         status = STATUS_VIEW_CHANGE;
@@ -439,6 +445,8 @@ void IRReplica::RecoverViewInfo() {
 }
 
 void IRReplica::BroadcastDoViewChangeMessages() {
+    return;
+    
     // Send a DoViewChangeMessage _without_ our record to all replicas except
     // ourselves and the leader.
     proto::DoViewChangeMessage msg;

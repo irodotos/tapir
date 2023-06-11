@@ -709,11 +709,11 @@ void
 VRReplica::HandleRequestStateTransfer(const TransportAddress &remote,
                                       const RequestStateTransferMessage &msg)
 {    
-    RDebug("Received REQUESTSTATETRANSFER " FMT_VIEWSTAMP,
+    RNotice("Received REQUESTSTATETRANSFER " FMT_VIEWSTAMP,
            msg.view(), msg.opnum());
 
     if (status != STATUS_NORMAL) {
-        RDebug("Ignoring REQUESTSTATETRANSFER due to abnormal status");
+        RNotice("Ignoring REQUESTSTATETRANSFER due to abnormal status");
         return;
     }
 
@@ -739,10 +739,10 @@ void
 VRReplica::HandleStateTransfer(const TransportAddress &remote,
                                const StateTransferMessage &msg)
 {
-    RDebug("Received STATETRANSFER " FMT_VIEWSTAMP, msg.view(), msg.opnum());
+    RNotice("Received STATETRANSFER " FMT_VIEWSTAMP, msg.view(), msg.opnum());
     
     if (msg.view() < view) {
-        RWarning("Ignoring state transfer for older view");
+        RNotice("Ignoring state transfer for older view");
         return;
     }
     
@@ -807,7 +807,7 @@ VRReplica::HandleStateTransfer(const TransportAddress &remote,
     std::list<std::pair<TransportAddress *, PrepareMessage> >pending = pendingPrepares;
     pendingPrepares.clear();
     for (auto & msgpair : pendingPrepares) {
-        RDebug("Processing pending prepare message");
+        RNotice("Processing pending prepare message");
         HandlePrepare(*msgpair.first, msgpair.second);
         delete msgpair.first;
     }
@@ -817,16 +817,16 @@ void
 VRReplica::HandleStartViewChange(const TransportAddress &remote,
                                  const StartViewChangeMessage &msg)
 {
-    RDebug("Received STARTVIEWCHANGE " FMT_VIEW " from replica %d",
+    RNotice("Received STARTVIEWCHANGE " FMT_VIEW " from replica %d",
            msg.view(), msg.replicaidx());
 
     if (msg.view() < view) {
-        RDebug("Ignoring STARTVIEWCHANGE for older view");
+        RNotice("Ignoring STARTVIEWCHANGE for older view");
         return;
     }
 
     if ((msg.view() == view) && (status != STATUS_VIEW_CHANGE)) {
-        RDebug("Ignoring STARTVIEWCHANGE for current view");
+        RNotice("Ignoring STARTVIEWCHANGE for current view");
         return;
     }
 
@@ -863,7 +863,7 @@ VRReplica::HandleStartViewChange(const TransportAddress &remote,
                      dvc.mutable_entries());
 
             if (!(transport->SendMessageToReplica(this, leader, dvc))) {
-                RWarning("Failed to send DoViewChange message to leader of new view");
+                RNotice("Failed to send DoViewChange message to leader of new view");
             }
         }
     }
@@ -874,18 +874,18 @@ void
 VRReplica::HandleDoViewChange(const TransportAddress &remote,
                               const DoViewChangeMessage &msg)
 {
-    RDebug("Received DOVIEWCHANGE " FMT_VIEW " from replica %d, "
+    RNotice("Received DOVIEWCHANGE " FMT_VIEW " from replica %d, "
            "lastnormalview=" FMT_VIEW " op=" FMT_OPNUM " committed=" FMT_OPNUM,
            msg.view(), msg.replicaidx(),
            msg.lastnormalview(), msg.lastop(), msg.lastcommitted());
 
     if (msg.view() < view) {
-        RDebug("Ignoring DOVIEWCHANGE for older view");
+        RNotice("Ignoring DOVIEWCHANGE for older view");
         return;
     }
 
     if ((msg.view() == view) && (status != STATUS_VIEW_CHANGE)) {
-        RDebug("Ignoring DOVIEWCHANGE for current view");
+        RNotice("Ignoring DOVIEWCHANGE for current view");
         return;
     }
 
@@ -921,7 +921,7 @@ VRReplica::HandleDoViewChange(const TransportAddress &remote,
         // Install the new log. We might not need to do this, if our
         // log was the most current one.
         if (latestMsg != NULL) {
-            RDebug("Selected log from replica %d with lastop=" FMT_OPNUM,
+            RNotice("Selected log from replica %d with lastop=" FMT_OPNUM,
                    latestMsg->replicaidx(), latestMsg->lastop());
             if (latestMsg->entries_size() == 0) {
                 // There weren't actually any entries in the
@@ -932,7 +932,8 @@ VRReplica::HandleDoViewChange(const TransportAddress &remote,
                 ASSERT(msg.lastop() == msg.lastcommitted());
             } else {
                 if (latestMsg->entries(0).opnum() > lastCommitted+1) {
-                    RPanic("Received log that didn't include enough entries to install it");
+                    // EDW ITAN PANIC
+                    RNotice("Received log that didn't include enough entries to install it");
                 }
                 
                 log.RemoveAfter(latestMsg->lastop()+1);
@@ -940,7 +941,7 @@ VRReplica::HandleDoViewChange(const TransportAddress &remote,
                             latestMsg->entries().end());
             }
         } else {
-            RDebug("My log is most current, lastnormalview=" FMT_VIEW " lastop=" FMT_OPNUM,
+            RNotice("My log is most current, lastnormalview=" FMT_VIEW " lastop=" FMT_OPNUM,
                    log.LastViewstamp().view, lastOp);
         }
 
@@ -984,7 +985,7 @@ VRReplica::HandleDoViewChange(const TransportAddress &remote,
         log.Dump(minCommitted, sv.mutable_entries());
 
         if (!(transport->SendMessageToAll(this, sv))) {
-            RWarning("Failed to send StartView message to all replicas");
+            RNotice("Failed to send StartView message to all replicas");
         }
     }    
 }
@@ -993,19 +994,19 @@ void
 VRReplica::HandleStartView(const TransportAddress &remote,
                            const StartViewMessage &msg)
 {
-    RDebug("Received STARTVIEW " FMT_VIEW 
+    RNotice("Received STARTVIEW " FMT_VIEW 
           " op=" FMT_OPNUM " committed=" FMT_OPNUM " entries=%d",
           msg.view(), msg.lastop(), msg.lastcommitted(), msg.entries_size());
-    RDebug("Currently in view " FMT_VIEW " op " FMT_OPNUM " committed " FMT_OPNUM,
+    RNotice("Currently in view " FMT_VIEW " op " FMT_OPNUM " committed " FMT_OPNUM,
           view, lastOp, lastCommitted);
 
     if (msg.view() < view) {
-        RWarning("Ignoring STARTVIEW for older view");
+        RNotice("Ignoring STARTVIEW for older view");
         return;
     }
 
     if ((msg.view() == view) && (status != STATUS_VIEW_CHANGE)) {
-        RWarning("Ignoring STARTVIEW for current view");
+        RNotice("Ignoring STARTVIEW for current view");
         return;
     }
 

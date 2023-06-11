@@ -13,11 +13,17 @@ fi
 n=$(head -n1 $config | awk '{print $2}')
 let n=2*$n+1
 
+# export GPG_TTY=$(tty)
+
 for ((i=0; i<$n; i++))
 do
   let line=$i+2 
   server=$(cat $config | sed -n ${line}p | awk -F'[ :]' '{print $2}')
-  command="ssh $server \"$cmd -c $config -i $i > $logdir/$shard.replica$i.log 2>&1 &\""
-  #echo $command
+  command="ssh -i myKey.pem $server \"$cmd -c $config -i $i > $logdir/$shard.replica$i.log 2>&1 & \""
+  # command="ssh -i myKey.pem $server  \"$cmd -c \"$config\" -i $i > \"$logdir/$shard.replica$i.log\"   &\""
+  # command="ssh -i myKey.pem $server \"$cmd -c \"$config\" -i $i \""
+  # command = " \"echo $cmd -c \"$config\" -i $1 > $logdir/$shard.replica$i.log 2>&1 &\" | \"ssh -i myKey.pem $server\" "
+  echo $command
+  # echo $server
   eval $command
 done
