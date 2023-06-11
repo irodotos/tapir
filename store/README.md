@@ -1,6 +1,8 @@
 # How to Run
+1) First you need to copy your private key for the VMs in the path /store/tools beacuse 
+we need it to connect to the VMs from the scrpts
 
-The clients and servers have to be provided a configuration file, one
+2) The clients and servers have to be provided a configuration file, one
 for each shard and a timestamp server (for OCC). For example a 3 shard
 configuration will have the following files:
 
@@ -48,3 +50,4 @@ Make sure you run all replicas for all shards.
 To run any of the clients in the benchmark directory,
 
 `./client -c <shard-config-prefix> -N <n_shards> -m <mode>`
+

@@ -18,7 +18,8 @@
 	
 	
 
-TAPIR can only run manualy and not with the script. So to run the TAPIR replicas need to run the following commands
+TAPIR can only run manualy and not with the script. So to run the TAPIR replicas need to run the following commands.
+You have to be in the directory store/tapirstore/
 	
 tapir1:
 ./server -c "/home/ubuntu/tapir/store/tools/shard0.config" -i 0 -m "txn-l" > /home/ubuntu/tapir/shard0.replica0.log 2>&1 &
@@ -34,3 +35,5 @@ tapir3:
 ./server -c "/home/ubuntu/tapir/store/tools/shard0.config" -i 2 -m "txn-l" > /home/ubuntu/tapir/shard0.replica2.log 2>&1 &
 ./server -c "/home/ubuntu/tapir/store/tools/shard1.config" -i 2 -m "txn-l" > /home/ubuntu/tapir/shard1.replica2.log 2>&1 &
 ./server -c "/home/ubuntu/tapir/store/tools/shard2.config" -i 0 -m "txn-l" > /home/ubuntu/tapir/shard2.replica0.log 2>&1 &
+
+
