@@ -270,6 +270,7 @@ main(int argc, char **argv)
 
                 getCount++;
                 getLatency += ((t4.tv_sec - t3.tv_sec)*1000000 + (t4.tv_usec - t3.tv_usec));
+                
             }
         }
 
